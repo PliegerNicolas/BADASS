@@ -46,6 +46,10 @@ sudo dpkg -i google-chrome-stable_current_amd64.deb
 sudo apt-get install -f -y
 sudo rm -f google-chrome-stable_current_amd64.deb
 
+#install key ssh
+echo "$RED Warning ! You are about to create new ssh key! $NC"
+ssh-keygen
+
 # install docker
 ./install-docker.sh
 
