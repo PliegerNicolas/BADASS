@@ -1,40 +1,28 @@
-#!/bin/sh
+#! /bin/sh
+
+echo "[i] Executing $0."
+set -e
+
 EMAIL=""
 USERNAME=""
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
-# checks
-if [ -z "${USERNAME}" ];then
-	echo "$RED Please fill the USERNAME var in script to add root privilege !$NC"
-	exit 1;
-fi
-if [ -z "${EMAIL}" ];then
-	echo "$RED Please fill the EMAIL var in script to set up github!$NC"
-	exit 1
-fi
 
-#passe en sudoers
-sudo su -c "echo '$USERNAME ALL=(ALL:ALL) ALL' >> /etc/sudoers"
-sudo usermod -aG sudo $USERNAME
-
-#config git
-sudo apt install git
-sudo git config --global user.email $EMAIL
+# echo "[i] Would you like to install optional packages ? (y/n)"
+read -p "[i] Would you like to install optional packages ? (y/n) " OPTIONAL_PACKAGES_REPLY
+if [ "$OPTIONAL_PACKAGES_REPLY" != "y" ] && [ "$OPTIONAL_PACKAGES_REPLY" != "n" ]; then
+	echo "[!] Error: '$OPTIONAL_PACKAGES_REPLY' not recognized. Try using 'y' or 'n'." >&2
+fi
 
 # update and install essentials
-sudo apt update
-sudo apt install build-essential -y
-sudo apt install net-tools -y
-sudo apt install vim -y
-sudo apt install make -y
-sudo apt install openssh-server -y
-sudo apt install openssh-client -y
-sudo apt install ufw -y
-sudo apt install htop -y
-sudo apt install curl -y
-sudo apt install wget -y
-sudo apt install zsh -y
+sudo apt update && sudo apt install -y \
+	make vim curl wget ufw net-tools
+
+if [ "$OPTIONAL_PACKAGES_REPLY" = 'y' ]; then
+	sudo apt update && sudo apt install -y \
+		zsh build-essential htop
+fi
 
 #allow ssh on firewall
 sudo ufw allow ssh
@@ -46,12 +34,8 @@ sudo dpkg -i google-chrome-stable_current_amd64.deb
 sudo apt-get install -f -y
 sudo rm -f google-chrome-stable_current_amd64.deb
 
-#install key ssh
-echo "$RED Warning ! You are about to create new ssh key! $NC"
-ssh-keygen
-
 # install docker
-./install-docker.sh
+sh ./install-docker.sh
 
 # install gns3
 sudo su -c "echo 'deb http://ftp.de.debian.org/debian buster main non-free' >>/etc/apt/sources.list"

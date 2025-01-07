@@ -2,6 +2,40 @@
 
 Emulation d'un reseau network 
 
+## Installation
+
+1. Install and access VirtualBox.
+2. Create your VM using the latest Debian ISO file (cf. [Download URLs](#download-urls)).
+3. Make yourself sudo.
+```sh
+su -lc "apt update && npm install -y sudo && usermod -aG [user] sudo && su - [user]"`
+```
+4. Install and prepare git.
+```sh
+sudo apt update && sudo apt install -y git openssh-client openssh-server
+sudo git config --global user.email [your_email]
+ssh-keygen -t rsa -b 4096 && cat ~/.ssh/id_rsa.pub # Assuming you used the default public key filename.
+```
+5. Ensure VM is accessible via ssh.
+```sh
+# Skip this part if not at School. 42 already uses port 22.
+# We arbitrarily decide to use port 2222 and forward it to port 22 of our VM.
+
+In VirtualBox go to your VM > Settings > Network > Advanced > PortForwarding and enter:
+
+          Name           |  Protocol  |  Host IP  |  Host Port  |   Guest IP   |  Guest Port
+ 42-ssh-port-forwarding  |    TCP     |           |    2222     |  127.0.0.1   |      22
+```
+5. Go to [Github](https://github.com) in the [settings](https://github.com/settings/keys) and add your ssh key there to allow contact.
+6. Download the repository.
+```sh
+git clone git@github.com:maSorciereBienAimee/BADASS.git ~/BADASS
+```
+7. To continue installation launch the dedicated script `install.sh`.
+```sh
+cd ~/BADASS && sh install.sh
+```
+
 ## Notions
 
 **Border Gateway Protocol (BGP)**:  
