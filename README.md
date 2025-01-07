@@ -8,7 +8,7 @@ Emulation d'un reseau network
 2. Create your VM using the latest Debian ISO file (cf. [Download URLs](#download-urls)).
 3. Make yourself sudo.
 ```sh
-su -lc "apt update && npm install -y sudo && usermod -aG [user] sudo && su - [user]"`
+su -lc "apt update && apt install -y sudo && usermod -aG [user] sudo && su - [user]"`
 ```
 4. Install and prepare git.
 ```sh
