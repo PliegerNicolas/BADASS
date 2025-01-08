@@ -70,13 +70,13 @@ ssh-keygen -t rsa -b 4096 && cat ~/.ssh/id_rsa.pub # Assuming you used the defau
 8. Download the repository.
 
 ```sh
-git clone git@github.com:maSorciereBienAimee/BADASS.git ~/BADASS
+git clone git@github.com:maSorciereBienAimee/BADASS.git ~/BADASS && cd ~/BADASS
 ```
 
 9. To continue installation launch the dedicated script `install.sh`.
 
 ```sh
-cd ~/BADASS && sh init/install.sh
+sh init/install.sh
 ```
 
 ## Notions
