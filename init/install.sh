@@ -48,5 +48,4 @@ pipx install -f gns3-gui
 pipx inject gns3-gui gns3-server PyQt5
 
 
-echo "$GREEN INSTALLATION SUCCEED! If you want to install guest additions, please insert guestAdditions CD image in 'Devices' and then run :$NC"
-echo "sudo mkdir -p /mnt/cdrom & sudo mount /dev/cdrom /mnt/cdrom & sudo cd /mnt/cdrom & sudo sh ./VBoxLinuxAdditions.run --nox11 & sudo shutdown -r now"
+echo "$GREEN INSTALLATION SUCCEED !$NC"
