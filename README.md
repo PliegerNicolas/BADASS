@@ -11,7 +11,11 @@ Emulation d'un reseau network
 su -lc "apt update && apt install -y sudo && usermod -aG sudo [user] && su - [user]"
 ```
 3. You can optionnaly set the GuestAdditions to allow copy/paste for the rest of installation.
-For that, in options tab click on  Devices > Insert Guest Additions CD image... then :
+For that:
+```sh
+In options tab click on Devices > Insert Guest Additions CD image...
+```
+and then run:
 ```sh
 sudo mkdir -p /mnt/cdrom
 sudo mount /dev/cdrom /mnt/cdrom
