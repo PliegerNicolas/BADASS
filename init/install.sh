@@ -45,7 +45,8 @@ sudo apt update
 sudo apt install python3 python3-pip pipx python3-pyqt5 python3-pyqt5.qtwebsockets python3-pyqt5.qtsvg qemu-system-x86 qemu-utils libvirt-clients libvirt-daemon-system virtinst dynamips software-properties-common ca-certificates curl gnupg2 
 pipx install -f gns3-server
 pipx install -f gns3-gui
+pipx ensurepath
 pipx inject gns3-gui gns3-server PyQt5
 
 
-echo "$GREEN INSTALLATION SUCCEED !$NC"
+echo "$GREEN INSTALLATION SUCCEED ! Please open a new terminal to update \$PATH $NC"
