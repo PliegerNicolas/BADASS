@@ -8,7 +8,20 @@ Emulation d'un reseau network
 2. Create your VM using the latest Debian ISO file (cf. [Download URLs](#download-urls)).
 3. Make yourself sudo.
 ```sh
-su -lc "apt update && apt install -y sudo && usermod -aG [user] sudo && su - [user]"`
+su -lc "apt update && apt install -y sudo && usermod -aG sudo [user] && su - [user]"
+```
+3. You can optionnaly set the GuestAdditions to allow copy/paste for the rest of installation.
+For that:
+```sh
+In options tab click on Devices > Insert Guest Additions CD image...
+```
+and then run:
+```sh
+sudo mkdir -p /mnt/cdrom
+sudo mount /dev/cdrom /mnt/cdrom
+sudo cd /mnt/cdrom
+sudo sh ./VBoxLinuxAdditions.run --nox11
+sudo shutdown -r now
 ```
 4. Install and prepare git.
 ```sh
@@ -33,7 +46,7 @@ git clone git@github.com:maSorciereBienAimee/BADASS.git ~/BADASS
 ```
 7. To continue installation launch the dedicated script `install.sh`.
 ```sh
-cd ~/BADASS && sh install.sh
+cd ~/BADASS && sh init/install.sh
 ```
 
 ## Notions
