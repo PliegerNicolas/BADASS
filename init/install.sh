@@ -3,9 +3,9 @@
 echo "[i] Executing $0."
 set -e
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-NC='\033[0m'
+RED="\033[0;31m"
+GREEN="\033[0;32m"
+NC="\033[0m"
 
 CURR_FILE_PATH="$(dirname "$(realpath "$0")")"
 
