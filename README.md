@@ -76,7 +76,7 @@ git clone git@github.com:maSorciereBienAimee/BADASS.git ~/BADASS && cd ~/BADASS
 9. To continue installation launch the dedicated script `install.sh`.
 
 ```sh
-sh init/install.sh
+. init/install.sh
 ```
 
 ## Notions
