@@ -51,4 +51,4 @@ sh ${CURR_FILE_PATH}/init/install-docker.sh
 sudo chmod 666 /var/run/docker.sock
 
 
-echo "$GREEN INSTALLATION SUCCEED ! Please open a new terminal to update \$PATH $NC"
+echo "$GREEN INSTALLATION SUCCEED ! $NC"
