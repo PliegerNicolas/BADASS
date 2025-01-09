@@ -72,19 +72,21 @@ if [ "$OPTIONAL_PACKAGES_REPLY" = "y" ]; then
 	sudo rm -f ~/gchrome.deb
 fi
 
-# install docker
-#sh ${CURR_FILE_PATH}/install-docker.sh
-
 # install gns3
-#sudo su -c "echo 'deb http://ftp.de.debian.org/debian buster main non-free' >>/etc/apt/sources.list"
-#sudo su -c "echo 'deb http://deb.debian.org/debian/ buster-updates main contrib non-free' >>/etc/apt/sources.list"
-#sudo su -c "echo 'deb http://security.debian.org/debian-security buster/updates main contrib non-free' >>/etc/apt/sources.list"
-#sudo apt update
-#sudo apt install python3 python3-pip pipx python3-pyqt5 python3-pyqt5.qtwebsockets python3-pyqt5.qtsvg qemu-system-x86 qemu-utils libvirt-clients libvirt-daemon-system virtinst dynamips software-properties-common ca-certificates curl gnupg2 
-#pipx install -f gns3-server
-#pipx install -f gns3-gui
-#pipx ensurepath
-#pipx inject gns3-gui gns3-server PyQt5
+sudo su -c "echo 'deb http://ftp.de.debian.org/debian buster main non-free' >>/etc/apt/sources.list"
+sudo su -c "echo 'deb http://deb.debian.org/debian/ buster-updates main contrib non-free' >>/etc/apt/sources.list"
+sudo su -c "echo 'deb http://security.debian.org/debian-security buster/updates main contrib non-free' >>/etc/apt/sources.list"
+sudo apt update
+sudo apt install python3 python3-pip pipx python3-pyqt5 python3-pyqt5.qtwebsockets python3-pyqt5.qtsvg qemu-system-x86 qemu-utils libvirt-clients libvirt-daemon-system virtinst dynamips software-properties-common ca-certificates curl gnupg2 
+
+# install docker
+sh ${CURR_FILE_PATH}/install-docker.sh
+
+# prepare gns3 environment
+pipx install -f gns3-server
+pipx install -f gns3-gui
+pipx ensurepath
+pipx inject gns3-gui gns3-server PyQt5
 
 
-#echo "$GREEN INSTALLATION SUCCEED ! Please open a new terminal to update \$PATH $NC"
+echo "$GREEN INSTALLATION SUCCEED ! Please open a new terminal to update \$PATH $NC"

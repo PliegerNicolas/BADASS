@@ -1,5 +1,3 @@
 FROM alpine:latest
 
-RUN apk add busybox
-
-CMD ["sh"]
+RUN apk add --no-cache busybox
