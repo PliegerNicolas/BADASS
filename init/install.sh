@@ -3,11 +3,11 @@
 echo "[i] Executing $0."
 set -e
 
-EMAIL=""
-USERNAME=""
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
+
+CURR_FILE_PATH="$(dirname "$(realpath "$0")")"
 
 # echo "[i] Would you like to install optional packages ? (y/n)"
 read -p "[i] Would you like to install optional packages ? (y/n) " OPTIONAL_PACKAGES_REPLY
@@ -35,7 +35,7 @@ sudo apt-get install -f -y
 sudo rm -f google-chrome-stable_current_amd64.deb
 
 # install docker
-sh ./install-docker.sh
+sh ${CURR_FILE_PATH}/install-docker.sh
 
 # install gns3
 sudo su -c "echo 'deb http://ftp.de.debian.org/debian buster main non-free' >>/etc/apt/sources.list"

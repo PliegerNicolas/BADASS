@@ -5,31 +5,27 @@ Emulation d'un reseau network
 ## Installation
 
 1. Install and access VirtualBox.
+   
 2. Create your VM using the latest Debian ISO file (cf. [Download URLs](#download-urls)).
+
 3. Make yourself sudo.
+
 ```sh
-su -lc "apt update && apt install -y sudo && usermod -aG sudo [user] && su - [user]"
+# Copy/paste isn't permitted by default with VirtualBox from host to guest (VM).
+
+su -lc "apt update && apt install -y sudo && usermod -aG sudo [user]"
+exec su - [user]
+
+# This replaces current shell with a new login shell.
+# The second command can be skipped but then you'll have to restart your VM.
 ```
-3. You can optionnaly set the GuestAdditions to allow copy/paste for the rest of installation.
-For that:
+
+4. (Optional) Ensure VM is accessible via ssh.
+
 ```sh
-In options tab click on Devices > Insert Guest Additions CD image...
+sudo apt update && sudo apt install openssh-server
 ```
-and then run:
-```sh
-sudo mkdir -p /mnt/cdrom
-sudo mount /dev/cdrom /mnt/cdrom
-sudo cd /mnt/cdrom
-sudo sh ./VBoxLinuxAdditions.run --nox11
-sudo shutdown -r now
-```
-4. Install and prepare git.
-```sh
-sudo apt update && sudo apt install -y git openssh-client openssh-server
-sudo git config --global user.email [your_email]
-ssh-keygen -t rsa -b 4096 && cat ~/.ssh/id_rsa.pub # Assuming you used the default public key filename.
-```
-5. Ensure VM is accessible via ssh.
+
 ```sh
 # Skip this part if not at School. 42 already uses port 22.
 # We arbitrarily decide to use port 2222 and forward it to port 22 of our VM.
@@ -37,16 +33,50 @@ ssh-keygen -t rsa -b 4096 && cat ~/.ssh/id_rsa.pub # Assuming you used the defau
 In VirtualBox go to your VM > Settings > Network > Advanced > PortForwarding and enter:
 
           Name           |  Protocol  |  Host IP  |  Host Port  |   Guest IP   |  Guest Port
- 42-ssh-port-forwarding  |    TCP     |           |    2222     |  127.0.0.1   |      22
+ 42-ssh-port-forwarding  |    TCP     |           |    2222     |              |      22
+
+# You can then log via the host using...
+ssh [user]@localhost -p 2222
 ```
-5. Go to [Github](https://github.com) in the [settings](https://github.com/settings/keys) and add your ssh key there to allow contact.
-6. Download the repository.
+
+*Small tip: use SSH to copy/paste commands from host to guest more easily.*
+
+5. (Optional) Allow copy/paste from host to guest (VM).
+
 ```sh
-git clone git@github.com:maSorciereBienAimee/BADASS.git ~/BADASS
+# In your VM click: "Devices > Inert Guest Additions CD image...".
+# You'll find it in the Virtual Machine View tabs.
 ```
-7. To continue installation launch the dedicated script `install.sh`.
+
 ```sh
-cd ~/BADASS && sh init/install.sh
+# Then, still in your VM. Open a terminal and run.
+# /!\ This will reboot your VM.
+
+sudo mkdir -p /mnt/cdrom && sudo mount /dev/cdrom /mnt/cdrom
+sudo sh /mnt/cdrom/VBoxLinuxAdditions.run --nox11
+sudo shutdown -r now
+```
+
+6. Install and prepare git.
+
+```sh
+sudo apt update && sudo apt install -y git openssh-client openssh-server
+sudo git config --global user.email [your_email]
+ssh-keygen -t rsa -b 4096 && cat ~/.ssh/id_rsa.pub # Assuming you used the default public key filename.
+```
+
+7. Go to [Github](https://github.com) in the [settings](https://github.com/settings/keys) and add your ssh key there to give permissions.
+
+8. Download the repository.
+
+```sh
+git clone git@github.com:maSorciereBienAimee/BADASS.git ~/BADASS && cd ~/BADASS
+```
+
+9. To continue installation launch the dedicated script `install.sh`.
+
+```sh
+sh init/install.sh
 ```
 
 ## Notions
