@@ -44,11 +44,11 @@ sudo apt install python3 python3-pip pipx python3-pyqt5 python3-pyqt5.qtwebsocke
 pipx install -f gns3-server
 pipx install -f gns3-gui
 pipx ensurepath
+pipx inject gns3-gui gns3-server PyQt5
 
 # install docker
-sh ${CURR_FILE_PATH}/install-docker.sh
+sh ${CURR_FILE_PATH}/init/install-docker.sh
 sudo chmod 666 /var/run/docker.sock
 
-pipx inject gns3-gui gns3-server PyQt5
 
 echo "$GREEN INSTALLATION SUCCEED ! Please open a new terminal to update \$PATH $NC"
