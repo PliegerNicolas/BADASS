@@ -1,54 +1,90 @@
 #! /bin/sh
 
-echo "[i] Executing $0."
-set -e
-
+CYAN="\033[0;36m"
+LIGHT_GRAY="\0033[0;37m"
 RED="\033[0;31m"
 GREEN="\033[0;32m"
 NC="\033[0m"
 
 CURR_FILE_PATH="$(dirname "$(realpath "$0")")"
 
-# echo "[i] Would you like to install optional packages ? (y/n)"
 read -p "[i] Would you like to install optional packages ? (y/n) " OPTIONAL_PACKAGES_REPLY
 if [ "$OPTIONAL_PACKAGES_REPLY" != "y" ] && [ "$OPTIONAL_PACKAGES_REPLY" != "n" ]; then
 	echo "[!] Error: '$OPTIONAL_PACKAGES_REPLY' not recognized. Try using 'y' or 'n'." >&2
 fi
 
-# update and install essentials
-sudo apt update && sudo apt install -y \
-	make vim curl wget ufw net-tools
+set -e
 
-if [ "$OPTIONAL_PACKAGES_REPLY" = 'y' ]; then
-	sudo apt update && sudo apt install -y \
-		zsh build-essential htop
+echo "${CYAN}[i] Executing $0.${NC}"
+
+echo "${CYAN}[i] Installing mandatory dependencies.${NC}"
+
+sudo apt update && sudo apt upgrade
+
+# Basic necessities (software installation, HTTP com. IDE, other...)
+echo "${CYAN}[i] > Installing basic necessities and dependencies.${NC}"
+sudo apt install -y -qq \
+	ufw curl wget \
+	vim \
+	make cmake \
+	net-tools \
+	software-properties-common ca-certificates gnupg2
+
+# Python
+echo "${CYAN}[i] > Installing Python3 and related packages.${NC}"
+sudo apt install -y -qq \
+	python3 \
+	python3-pip pipx \
+	python3-pyqt5 python3-pyqt5.qtwebsockets python3-pyqt5.qtsvg
+
+# Qemu
+echo "${CYAN}[i] > Installing Qemu related packages.${NC}"
+sudo apt install -y -qq \
+	qemu-kvm qemu-utils
+
+# libvirt
+echo "${CYAN}[i] > Installing libvirt related packages.${NC}"
+sudo apt install -y -qq \
+	libvirt-clients libvirt-daemon-system virtinst
+
+# dynamips (As it cannot be found in the apt sources, we install it manually).
+echo "${CYAN}[i] > Installing dynamips.${NC}"
+sudo apt update && sudo apt install -y -qq \
+	libelf-dev libpcap0.8-dev
+
+if [ -z "$(which dynamips)" ]; then
+	git clone https://github.com/GNS3/dynamips.git ~/dynamips
+	cd ~/dynamips && mkdir -p build && cd build
+	cmake .. && sudo make install
+	rm -rf ~/dynamips
+else
+	echo "${LIGHT_GRAY}[i] Dynamips already installed...${NC}"
 fi
 
-#allow ssh on firewall
+echo "${CYAN}[i] Configuring ufw (+ssh).${NC}"
 sudo ufw allow ssh
 
-#install chrome
-sudo wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-sudo apt-get install fonts-liberation libu2f-udev -y #utile pour chrome
-sudo dpkg -i google-chrome-stable_current_amd64.deb
-sudo apt-get install -f -y
-sudo rm -f google-chrome-stable_current_amd64.deb
+if [ "$OPTIONAL_PACKAGES_REPLY" = "y" ]; then
+	sudo apt update
+	
+	echo "${CYAN}[i] (Optional) Installing google chrome.${NC}"
+	if [ -z "$(which google-chrome-stable)" ]; then
+		curl -o ~/gchrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+		sudo dpkg -i ~/gchrome.deb
+		sudo rm -f ~/gchrome.deb
+	else
+		echo "${LIGHT_GRAY}[i] Google chrome already installed...${NC}"
+	fi
+fi
 
-# install gns3
-sudo su -c "echo 'deb http://ftp.de.debian.org/debian buster main non-free' >>/etc/apt/sources.list"
-sudo su -c "echo 'deb http://deb.debian.org/debian/ buster-updates main contrib non-free' >>/etc/apt/sources.list"
-sudo su -c "echo 'deb http://security.debian.org/debian-security buster/updates main contrib non-free' >>/etc/apt/sources.list"
+echo "${CYAN}[i] Installing GNS3.${NC}"
 sudo apt update
-sudo apt install python3 python3-pip pipx python3-pyqt5 python3-pyqt5.qtwebsockets python3-pyqt5.qtsvg qemu-system-x86 qemu-utils libvirt-clients libvirt-daemon-system virtinst dynamips software-properties-common ca-certificates curl gnupg2 
-# prepare gns3 environment
-pipx install -f gns3-server
-pipx install -f gns3-gui
-pipx ensurepath
+pipx install gns3-server && pipx install gns3-gui
 pipx inject gns3-gui gns3-server PyQt5
+pipx ensurepath
 
-# install docker
+echo "${CYAN}[i] Installing docker.${NC}"
 sh ${CURR_FILE_PATH}/init/install-docker.sh
 sudo chmod 666 /var/run/docker.sock
-
 
 echo "$GREEN INSTALLATION SUCCEED ! $NC"
