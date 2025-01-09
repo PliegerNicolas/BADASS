@@ -1,11 +1,10 @@
 #! /bin/sh
 
-
-CYAN='\033[0;36m'
-LIGHT_GRAY='\0033[0;37m'
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-NC='\033[0m'
+CYAN="\033[0;36m"
+LIGHT_GRAY="\0033[0;37m"
+RED="\033[0;31m"
+GREEN="\033[0;32m"
+NC="\033[0m"
 
 CURR_FILE_PATH="$(dirname "$(realpath "$0")")"
 
@@ -85,6 +84,7 @@ pipx inject gns3-gui gns3-server PyQt5
 pipx ensurepath
 
 echo "${CYAN}[i] Installing docker.${NC}"
-sh ${CURR_FILE_PATH}/install-docker.sh
+sh ${CURR_FILE_PATH}/init/install-docker.sh
+sudo chmod 666 /var/run/docker.sock
 
-echo "$GREEN INSTALLATION SUCCEED ! Please open a new terminal to update \$PATH $NC"
+echo "$GREEN INSTALLATION SUCCEED ! $NC"
