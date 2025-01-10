@@ -19,7 +19,7 @@ echo "${CYAN}[i] Executing $0.${NC}"
 
 echo "${CYAN}[i] Installing mandatory dependencies.${NC}"
 
-sudo apt update && sudo apt upgrade
+sudo apt update && sudo apt upgrade -y
 
 # Basic necessities (software installation, HTTP com. IDE, other...)
 echo "${CYAN}[i] > Installing basic necessities and dependencies.${NC}"
@@ -56,7 +56,7 @@ if [ -z "$(which dynamips)" ]; then
 	git clone https://github.com/GNS3/dynamips.git ~/dynamips
 	cd ~/dynamips && mkdir -p build && cd build
 	cmake .. && sudo make install
-	rm -rf ~/dynamips
+	cd ~ && rm -rf ~/dynamips
 else
 	echo "${LIGHT_GRAY}[i] Dynamips already installed...${NC}"
 fi
@@ -69,6 +69,7 @@ if [ "$OPTIONAL_PACKAGES_REPLY" = "y" ]; then
 	
 	echo "${CYAN}[i] (Optional) Installing google chrome.${NC}"
 	if [ -z "$(which google-chrome-stable)" ]; then
+		sudo apt install fonts-liberation
 		curl -o ~/gchrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 		sudo dpkg -i ~/gchrome.deb
 		sudo rm -f ~/gchrome.deb
@@ -79,12 +80,14 @@ fi
 
 echo "${CYAN}[i] Installing GNS3.${NC}"
 sudo apt update
-pipx install gns3-server && pipx install gns3-gui
+pipx install gns3-server
+pipx install gns3-gui
 pipx inject gns3-gui gns3-server PyQt5
 pipx ensurepath
 
 echo "${CYAN}[i] Installing docker.${NC}"
-sh ${CURR_FILE_PATH}/init/install-docker.sh
-sudo chmod 666 /var/run/docker.sock
+sh ${CURR_FILE_PATH}/install-docker.sh
+sudo usermod -aG docker $USER
+#sudo chmod 666 /var/run/docker.sock
 
 echo "$GREEN INSTALLATION SUCCEED ! $NC"

@@ -23,7 +23,7 @@ exec su - [user]
 4. (Optional) Ensure VM is accessible via ssh.
 
 ```sh
-sudo apt update && sudo apt install openssh-server
+sudo apt update && sudo apt install -y openssh-server
 ```
 
 ```sh
@@ -67,16 +67,20 @@ ssh-keygen -t rsa -b 4096 && cat ~/.ssh/id_rsa.pub # Assuming you used the defau
 
 7. Go to [Github](https://github.com) in the [settings](https://github.com/settings/keys) and add your ssh key there to give permissions.
 
-8. Download the repository.
+8. Download the repository and launch the installation script `install.sh`.
 
 ```sh
 git clone git@github.com:maSorciereBienAimee/BADASS.git ~/BADASS && cd ~/BADASS
+sh init/install.sh
 ```
 
-9. To continue installation launch the dedicated script `install.sh`.
+9. Launch GNS3 and it's server.
 
 ```sh
-source init/install.sh
+gns3server
+```
+```sh
+gns3
 ```
 
 ## Notions
