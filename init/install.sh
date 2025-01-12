@@ -61,6 +61,18 @@ else
 	echo "${LIGHT_GRAY}[i] Dynamips already installed...${NC}"
 fi
 
+# uBridge (As it cannot be found in the apt sources, we install it manually).
+echo "${CYAN}[i] > Installing uBridge.${NC}"
+if [ -z "$(which ubridge)" ]; then
+	git clone git@github.com:GNS3/ubridge.git ~/ubridge
+	cd ~/ubridge
+	make
+	sudo make install
+	cd ~&& rm -rf ~/ubridge
+else
+	echo "${LIGHT_GRAY}[i] uBridge already installed...${NC}"
+fi
+
 echo "${CYAN}[i] Configuring ufw (+ssh).${NC}"
 sudo ufw allow ssh
 
@@ -78,6 +90,9 @@ if [ "$OPTIONAL_PACKAGES_REPLY" = "y" ]; then
 	fi
 fi
 
+echo "${CYAN}[i] Installing busybox.${NC}"
+sudo apt update && sudo apt install -y busybox-static
+
 echo "${CYAN}[i] Installing GNS3.${NC}"
 sudo apt update
 pipx install gns3-server
@@ -86,8 +101,7 @@ pipx inject gns3-gui gns3-server PyQt5
 pipx ensurepath
 
 echo "${CYAN}[i] Installing docker.${NC}"
-sh ${CURR_FILE_PATH}/install-docker.sh
+sh ${CURR_FILE_PATH}/install-docker.sh --rootful
 sudo usermod -aG docker $USER
-#sudo chmod 666 /var/run/docker.sock
 
 echo "$GREEN INSTALLATION SUCCEED ! $NC"

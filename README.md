@@ -26,9 +26,11 @@ exec su - [user]
 sudo apt update && sudo apt install -y openssh-server
 ```
 
+Apply this part if default SSH port (22) is reserved/blocked behind a firewall.
+
 ```sh
-# Skip this part if not at School. 42 already uses port 22.
 # We arbitrarily decide to use port 2222 and forward it to port 22 of our VM.
+# You can choose whatever value you want for Host Port.
 
 In VirtualBox go to your VM > Settings > Network > Advanced > PortForwarding and enter:
 
