@@ -4,5 +4,4 @@
 /usr/lib/frr/bgpd -d -F traditional -A 127.0.0.1
 /usr/lib/frr/ospfd -d -F traditional -A 127.0.0.1
 /usr/lib/frr/isisd -d -F traditional -A 127.0.0.1
-
 /bin/ash -c "while true; do TERM=vt100 /gns3/bin/busybox sh; done"
