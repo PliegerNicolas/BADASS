@@ -28,6 +28,7 @@ sudo apt install -y -qq \
 	vim \
 	make cmake \
 	net-tools \
+	xterm \
 	software-properties-common ca-certificates gnupg2
 
 # Python
