@@ -1,10 +1,11 @@
 FROM frrouting/frr:latest
 
-# Busybox is already installed on frrouting default image
+# Capabilities are set in the Makefile when starting up the container.
+
 RUN mv /etc/frr/daemons /etc/frr/daemons-backup
-COPY config/config-daemons /etc/frr/daemons
 
-COPY test-install.sh /home/test-install.sh
-RUN chmod 755 /home/test-install.sh
+COPY ./config/daemons /etc/frr/daemons
+COPY ./config/frr.conf /etc/frr/frr.conf
+COPY ./config/vtysh.conf /etc/frr/vtysh.conf
 
-CMD ["/bin/sh", "-l"]
+# Inherit ENTRYPOINT and CMD (+ the rest) from the base image.

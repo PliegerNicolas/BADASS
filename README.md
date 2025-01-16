@@ -46,12 +46,17 @@ ssh [user]@localhost -p 2222
 5. (Optional) Allow copy/paste from host to guest (VM).
 
 ```sh
-# In your VM click: "Devices > Inert Guest Additions CD image...".
-# You'll find it in the Virtual Machine View tabs.
+# Go in your VM's view tabs and click: "Devices > Inert Guest Additions CD image...".
+```
+
+```
+# In the Oracle VM VirtualBox Manager:
+# step nº1: accès your VM's settings (right click your VM > settings.
+# step nº2: General > advanced: set the options you'd like for Shared clipboard or Drag'n'Drop.
 ```
 
 ```sh
-# Then, still in your VM. Open a terminal and run.
+# Then in your VM. Open a terminal and run.
 # /!\ This will reboot your VM.
 
 sudo mkdir -p /mnt/cdrom && sudo mount /dev/cdrom /mnt/cdrom
