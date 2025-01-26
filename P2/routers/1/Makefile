@@ -2,7 +2,7 @@
 # *                              GENERAL INFO                                * #
 # **************************************************************************** #
 
-NAME=router
+NAME=router1
 PREFIX=nplieger-ssar
 CAPS=--cap-add=NET_ADMIN --cap-add=NET_RAW --cap-add=SYS_ADMIN
 
