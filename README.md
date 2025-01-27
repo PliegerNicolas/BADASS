@@ -81,13 +81,13 @@ git clone git@github.com:maSorciereBienAimee/BADASS.git ~/BADASS && cd ~/BADASS
 sh init/install.sh
 ```
 
-9. Launch GNS3 and it's server.
+9. Launch GNS3.
 
 ```sh
-gns3server
-```
-```sh
 gns3
+
+# GNS3 should launch it's server. But you can do it manually using:
+# gns3server
 ```
 
 ## Notions
