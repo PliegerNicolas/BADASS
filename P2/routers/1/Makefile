@@ -2,12 +2,26 @@
 # *                              GENERAL INFO                                * #
 # **************************************************************************** #
 
-NAME=router1
-PREFIX=nplieger-ssar
-CAPS=--cap-add=NET_ADMIN --cap-add=NET_RAW --cap-add=SYS_ADMIN
+NAME			=	router1
+PREFIX			=	nplieger-ssar
+CAPS			=	--cap-add=NET_ADMIN --cap-add=NET_RAW --cap-add=SYS_ADMIN
 
-FOUND_IMAGE:=$(shell ! docker image inspect ${PREFIX}/${NAME} > /dev/null 2>&1; echo $$?)
-FOUND_CONTAINERS:=$(shell docker ps -a --filter "name=${PREFIX}-${HOST}" | wc -l | awk '{print $$1 - 1}')
+FOUND_IMAGE		:=	$(shell ! docker image inspect ${PREFIX}/${NAME} > /dev/null 2>&1; echo $$?)
+FOUND_CONTAINERS	:=	$(shell docker ps -a --filter "name=${PREFIX}-${HOST}" | wc -l | awk '{print $$1 - 1}')
+
+#* *************************************************************************** *#
+#* *                             RULE FILTERS                                * *#
+#* *************************************************************************** *#
+
+ifeq (unicast, $(filter unicast,$(MAKECMDGOALS)))
+	ENTRYPOINT_ARGS	:=	unicast
+endif
+
+ifeq (multicast, $(filter multicast,$(MAKECMDGOALS)))
+	ENTRYPOINT_ARGS	:=	multicast
+endif
+
+ENTRYPOINT_ARGS		?=	unicast
 
 # **************************************************************************** #
 # *                                  RULES                                   * #
@@ -18,7 +32,7 @@ all: build
 build:
 	@if [ "${FOUND_IMAGE}" -eq 0 ]; then \
 		echo "Building docker image ${PREFIX}/${NAME}."; \
-		docker build -t ${PREFIX}/${NAME} .; \
+		docker build --build-arg ENTRYPOINT_ARGS="${ENTRYPOINT_ARGS}" -t ${PREFIX}/${NAME} .; \
 	else \
 		echo "Docker image ${PREFIX}/${NAME} already exists."; \
 	fi
@@ -43,4 +57,8 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: run build clean fclean re
+unicast: all
+
+multicast: all
+
+.PHONY: run build clean fclean re unicast multicast

@@ -42,4 +42,8 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: run build clean fclean re
+unicast: all
+
+multicast: all
+
+.PHONY: run build clean fclean re unicast multicast

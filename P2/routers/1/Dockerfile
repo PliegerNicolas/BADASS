@@ -1,6 +1,8 @@
 FROM frrouting/frr:latest
 
-# Capabilities are set in the Makefile when starting up the container.
+ARG	ENTRYPOINT_ARGS="unicast"
+ENV	ENTRYPOINT_ARGS=$ENTRYPOINT_ARGS
+# Capabilities and ARGS are set/passed in the Makefile when starting up the container.
 
 RUN	apk update && apk add --no-cache iproute2 tcpdump
 
