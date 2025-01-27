@@ -7,6 +7,8 @@ if [ -z "$(which ip)" ]; then
 	exit 1
 fi
 
+ARGS="${ENTRYPOINT_ARGS:-unicast}"
+
 # ===================================================================== #
 # ===================================================================== #
 
@@ -29,7 +31,11 @@ fi
 ip link set eth0 up # No IP address set as we only use Layer 2 communication here.
 ip addr add 10.1.1.2/24 dev eth1
 ip link set eth1 up
-ip link add vxlan0 type vxlan id 10 dev eth1 local 10.1.1.2 remote 10.1.1.1
+if [ "$ARGS" == "unicast" ]; then
+	ip link add vxlan0 type vxlan id 10 dev eth1 local 10.1.1.2 remote 10.1.1.1
+else
+	ip link add vxlan0 type vxlan id 10 dev eth1 group 239.0.0.1
+fi
 ip link set vxlan0 up
 
 # Configuration of the bridge between router1.eth0 and router1.vxlan0 to enable communication with the virtual VXLAN interface.
