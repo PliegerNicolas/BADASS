@@ -10,9 +10,9 @@ else
 	echo "${CYAN}[i] Running makefiles with rule: $1.${NC}"
 fi
 
-if [ -f "${CURR_FILE_PATH}/RR/Makefile" ]; then
-	echo "${CYAN}Running Makefile in directory: ${CURR_FILE_PATH}/RR.${NC}"
-	make -C ${CURR_FILE_PATH}/RR $1
+if [ -f "${CURR_FILE_PATH}/rr/Makefile" ]; then
+	echo "${CYAN}Running Makefile in directory: ${CURR_FILE_PATH}/rr.${NC}"
+	make -C ${CURR_FILE_PATH}/rr $1
 fi
 
 for dir in ${CURR_FILE_PATH}/leafs/*/; do
