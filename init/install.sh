@@ -92,6 +92,7 @@ if [ "$OPTIONAL_PACKAGES_REPLY" = "y" ]; then
 	echo "${CYAN}[i] (Optional) Installing wireshark.${NC}"
 	if [ -z "$(which wireshark)" ]; then
 		sudo apt update && sudo apt install wireshark
+		sudo usermod -aG wireshark $USER
 	else
 		echo "${LIGHT_GRAY}[i] Wireshark already installed...${NC}"
 	fi

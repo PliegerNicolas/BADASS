@@ -4,7 +4,9 @@ ARG	ENTRYPOINT_ARGS="unicast"
 ENV	ENTRYPOINT_ARGS=$ENTRYPOINT_ARGS
 # Capabilities and ARGS are set/passed in the Makefile when starting up the container.
 
-RUN	apk update && apk add --no-cache iproute2 tcpdump
+RUN	apk update && apk add --no-cache \
+	iproute2 \
+	tcpdump
 
 RUN	mv /etc/frr/daemons /etc/frr/daemons-backup
 COPY	./config/daemons /etc/frr/daemons
