@@ -89,6 +89,12 @@ if [ "$OPTIONAL_PACKAGES_REPLY" = "y" ]; then
 	else
 		echo "${LIGHT_GRAY}[i] Google chrome already installed...${NC}"
 	fi
+	echo "${CYAN}[i] (Optional) Installing wireshark.${NC}"
+	if [ -z "$(which wireshark)" ]; then
+		sudo apt update && sudo apt install wireshark
+	else
+		echo "${LIGHT_GRAY}[i] Wireshark already installed...${NC}"
+	fi
 fi
 
 echo "${CYAN}[i] Installing busybox.${NC}"

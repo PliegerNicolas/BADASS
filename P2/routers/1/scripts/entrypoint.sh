@@ -31,10 +31,13 @@ ARGS="${ENTRYPOINT_ARGS:-unicast}"
 ip link set eth0 up # No IP address set as we only use Layer 2 communication here.
 ip addr add 10.1.1.1/24 dev eth1
 ip link set eth1 up
+echo "$ARGS"
 if [ "$ARGS" == "unicast" ]; then
-	ip link add vxlan0 type vxlan id 10 dev eth1 local 10.1.1.1 remote 10.1.1.2
+	echo "[i] Configuring VXLAN with unicast."
+	ip link add vxlan0 type vxlan id 10 dev eth1 local 10.1.1.1 remote 10.1.1.2 dstport 4789
 else
-	ip link add vxlan0 type vxlan id 10 dev eth1 group 239.0.0.1
+	echo "[i] Configuring VXLAN with multicast."
+	ip link add vxlan0 type vxlan id 10 dev eth1 group 239.0.0.1 dstport 4789
 fi
 ip link set vxlan0 up
 
