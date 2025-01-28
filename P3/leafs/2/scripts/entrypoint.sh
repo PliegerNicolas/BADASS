@@ -20,7 +20,7 @@ ip link set eth0 up
 # ip link set lo up
 
 # Then, create a vxlan to allow connection thanks to layer3
-ip ink add vxlan0 type vxlan id 10 dstport 4789
+ip link add vxlan0 type vxlan id 10 dstport 4789
 ip link set dev vxlan0 up
 
 # create a bridge to link eth0 to vxlan

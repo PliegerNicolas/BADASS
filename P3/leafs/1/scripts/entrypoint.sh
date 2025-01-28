@@ -13,14 +13,14 @@ fi
 ip link set eth0 up
 
 # configure eth1 (link to RR)
-#ip addr add 10.1.1.2/24 dev eth1
-#ip link set eth1 up
+ip addr add 10.1.1.2/24 dev eth1
+ip link set eth1 up
 # configure addr loopback
-# ip addr add 1.1.1.2/32 dev lo
-# ip link set lo up
+ip addr add 1.1.1.2/32 dev lo
+ip link set lo up
 
 # Then, create a vxlan to allow connection thanks to layer3
-ip ink add vxlan0 type vxlan id 10 dstport 4789
+ip link add vxlan0 type vxlan id 10 dstport 4789
 ip link set dev vxlan0 up
 
 # create a bridge to link eth0 to vxlan
