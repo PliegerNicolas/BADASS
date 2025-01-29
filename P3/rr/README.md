@@ -1,52 +1,48 @@
-# FRRouting config.
+# Router Reflector config
 
-See documentation [here](https://docs.frrouting.org/en/latest/setup.html).
-
-## Systemd
-
-The FRRouting docker image doesn't provide **OpenRC** nor **systemd** as it is meant to be lightweight.
-We do not plan using those services to startup frr thus we won't configure it even though the file is available in `./config/frr.service` in case of.
-If you still want to configure it, check out documentation.
-
-## Daemons
-
-To activate the necessary daemons, we set them up in the `daemons` file.
-We have set the following:
+## entrypoint
 
 ```
-bgpd=yes    # BGPD
-ospfd=yes   # OSPFD
-isisd=yes   #IS-IS
+ip addr add 10.1.1.1/30 dev eth0
+ip link set eth0 up
+ip addr add 10.1.1.5/30 dev eth1
+ip link set eth1 up
+ip addr add 10.1.1.9/30 dev eth2
+ip link set eth2 up
 ```
+Configuration of interface ethernet, eth0 link to leaf1, eth1 link to leaf2, eth2 link to leaf3.
+We use mask /30 for addresse 10.1.1.x because a subnet has 4 addresses, with only 2 usable for routers (because first address is for identify the subnet, and last one is for broadcast). So, it allow to create smaller subnet than /24 but allow to avoid loop broadcast in the same way.
+```
+ip addr add 1.1.1.1/32 dev lo
+ip link set lo up
+```
+A /32 mask means that this address is only accessible on this router. But it can be announce in routage protocole. We use loopback because it is always accessible. 
+It will be use by protocole ospf : announce loopback to protocole allow others routers to know to reach this router.
+It also be used by BGP to established session with leaf.
 
-As specified by the comments in the file, watchfrr, zebra and staticd are started up by default.
-
-## FRR: Services
-
-As we are using alpine. FRR services ports are defined automatically.
-You can check if the following are defined in `/etc/services` using commands such as `cat /etc/services | grep 'ospfd'`.
+## frr.conf
+```
+router bgp 1
+ neighbor LEAF_GROUP peer-group
+ neighbor LEAF_GROUP remote-as 1
+ neighbor LEAF_GROUP update-source lo
+ bgp listen range 1.1.1.0/24 peer-group LEAF_GROUP
+```
+These lines activate bgp on the router, and associate it to AS number 1. 
+Then it create a peer groupe named LEAF_GROUP.
+We associate all members of LEAF_GROUP to AS number 1.
+Then we ask for BGP to use loopback interface to update (more stable)
+Finaly, we ask to the router to dynamically listen all BGP connexion from 1.1.1.x So, when if a new router establish bgp session on this range, it is automatically add to LEAF_GROUP.
 
 ```
-zebrasrv      2600/tcp                 # zebra service
-zebra         2601/tcp                 # zebra vty
-ripd          2602/tcp                 # RIPd vty
-ripngd        2603/tcp                 # RIPngd vty
-ospfd         2604/tcp                 # OSPFd vty
-bgpd          2605/tcp                 # BGPd vty
-ospf6d        2606/tcp                 # OSPF6d vty
-ospfapi       2607/tcp                 # ospfapi
-isisd         2608/tcp                 # ISISd vty
-babeld        2609/tcp                 # BABELd vty
-nhrpd         2610/tcp                 # nhrpd vty
-pimd          2611/tcp                 # PIMd vty
-ldpd          2612/tcp                 # LDPd vty
-eigprd        2613/tcp                 # EIGRPd vty
-bfdd          2617/tcp                 # bfdd vty
-fabricd       2618/tcp                 # fabricd vty
-vrrpd         2619/tcp                 # vrrpd vty
+ address-family l2vpn evpn
+  neighbor LEAF_GROUP activate
+  neighbor LEAF_GROUP route-reflector-client
 ```
+Activate EVPN on the router, then activate BGP EVPN for all LEAF_GROUP neighbor, and set the router as ROUTE REFLECTOR for LEAF_GROUP. (so it will receive BGP route from client of LEAF_GROUP, and shared it to other client.
 
-## Vtysh
-
-No configuration file needed with FRRouting/frr docker image (cf. /etc/frr/vtysh.conf).
-
+```
+router ospf
+ network 0.0.0.0/0 area 0 
+```
+Activate OSPF on the router, and associate all interface of the router to area ospf 0. It allow exchange of route between ospf routers.
