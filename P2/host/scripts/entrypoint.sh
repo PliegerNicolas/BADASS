@@ -7,7 +7,9 @@ if [ -z "$(which ip)" ]; then
 	exit 1
 fi
 
-REQUIRED_ENV_VARS="ETH0_PREFIX"
+OPTIONAL_ENV_VARS="ETH0_PREFIX"
+REQUIRED_ENV_VARS=""
+echo "[i] Optional environment variables: $REQUIRED_ENV_VARS"
 echo "[i] Expected environment variables: $REQUIRED_ENV_VARS"
 
 for VAR in $REQUIRED_ENV_VARS; do
@@ -23,7 +25,7 @@ done
 
 # We configure hostX.eth0 with the same subnet as routerX.eth0 to ensure layer 2 connectivity.
 # Configuration of interfaces (eth0, eth1, vxlan0...)
-ip addr add ${ETH0_PREFIX} dev eth0
+[ -n "$ETH0_PREFIX" ] && ip addr add ${ETH0_PREFIX} dev eth0
 ip link set eth0 up
 
 # Execute all passed arguments of the script as a command (typically the Dockerfile's CMD entry).
