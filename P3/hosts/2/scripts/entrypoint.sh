@@ -13,7 +13,7 @@ fi
 # Router2 will ensure that the received data packets will get transmitted to destination using VXLAN encapsulation.
 
 # Configuration of interfaces (eth0, eth1, vxlan0...)
-ip addr add 192.168.1.2/24 dev eth0
-ip link set eth0 up
+#ip addr add 192.168.1.2/24 dev eth0
+#ip link set eth0 up
 
 exec "$@"
