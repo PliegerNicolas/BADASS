@@ -37,3 +37,6 @@ Open Shortest Path First allow to find the shortest path to a destination. It wo
 It works on intern network.
 OSPF send "hello packet" to detect neighbor, then routeur discovered share information on their own link. With new information, ospf calcul shortest path.
 In VXLAN context, ospf allow to share route between VTEP (vxlan tunnel endpoint that encapsulate and deencapsulate ethernet frame) and give a ubderlay network stable to vxlan. In EVPN context, it allow connexion between many data centers.
+
+## Topology.
+For our topology, it begin with VXLAN. Our leaf are set a vxlan of same ID, with start endpoint set to their loopback address.
