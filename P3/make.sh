@@ -10,21 +10,11 @@ else
 	echo "${CYAN}[i] Running makefiles with rule: $1.${NC}"
 fi
 
-if [ -f "${CURR_FILE_PATH}/rr/Makefile" ]; then
-	echo "${CYAN}Running Makefile in directory: ${CURR_FILE_PATH}/rr.${NC}"
-	make -C ${CURR_FILE_PATH}/rr $1
-fi
+DIRS_TO_MAKE="route-reflector leaf host"
 
-for dir in ${CURR_FILE_PATH}/leafs/*/; do
-	if [ -f "$dir/Makefile" ]; then
-		echo "${CYAN}Running Makefile in directory: ${dir}.${NC}"
-		make -C $dir $1
-	fi
-done
-
-for dir in ${CURR_FILE_PATH}/hosts/*/; do
-	if [ -f "$dir/Makefile" ]; then
-		echo "${CYAN}Running Makefile in directory: ${dir}.${NC}"
-		make -C $dir $1
+for DIR in $DIRS_TO_MAKE; do
+	if [ -f "${CURR_FILE_PATH}/${DIR}/Makefile" ]; then
+		echo "${CYAN}Running Makefile in directory: ${DIR}.${NC}"
+		make -C $DIR $1
 	fi
 done
