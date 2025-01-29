@@ -28,12 +28,21 @@ router bgp 1
  neighbor LEAF_GROUP update-source lo
  bgp listen range 1.1.1.0/24 peer-group LEAF_GROUP
 ```
+These lines activate bgp on the router, and associate it to AS number 1. 
+Then it create a peer groupe named LEAF_GROUP.
+We associate all members of LEAF_GROUP to AS number 1.
+Then we ask for BGP to use loopback interface to update (more stable)
+Finaly, we ask to the router to dynamically listen all BGP connexion from 1.1.1.x So, when if a new router establish bgp session on this range, it is automatically add to LEAF_GROUP.
+
 ```
  address-family l2vpn evpn
   neighbor LEAF_GROUP activate
   neighbor LEAF_GROUP route-reflector-client
 ```
+Activate EVPN on the router, then activate BGP EVPN for all LEAF_GROUP neighbor, and set the router as ROUTE REFLECTOR for LEAF_GROUP. (so it will receive BGP route from client of LEAF_GROUP, and shared it to other client.
+
 ```
 router ospf
  network 0.0.0.0/0 area 0 
 ```
+Activate OSPF on the router, and associate all interface of the router to area ospf 0. It allow exchange of route between ospf routers.
