@@ -10,16 +10,11 @@ else
 	echo "${CYAN}[i] Running makefiles with rule: $1.${NC}"
 fi
 
-for dir in ${CURR_FILE_PATH}/routers/*/; do
-	if [ -f "$dir/Makefile" ]; then
-		echo "${CYAN}Running Makefile in directory: ${dir}.${NC}"
-		make -C $dir $1
-	fi
-done
+DIRS_TO_MAKE="router host"
 
-for dir in ${CURR_FILE_PATH}/hosts/*/; do
-	if [ -f "$dir/Makefile" ]; then
-		echo "${CYAN}Running Makefile in directory: ${dir}.${NC}"
-		make -C $dir $1
+for DIR in $DIRS_TO_MAKE; do
+	if [ -f "${CURR_FILE_PATH}/${DIR}/Makefile" ]; then
+		echo "${CYAN}Running Makefile in directory: ${DIR}.${NC}"
+		make -C $DIR $1
 	fi
 done
