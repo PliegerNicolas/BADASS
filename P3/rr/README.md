@@ -39,10 +39,10 @@ Finaly, we ask to the router to dynamically listen all BGP connexion from 1.1.1.
   neighbor LEAF_GROUP activate
   neighbor LEAF_GROUP route-reflector-client
 ```
-Activate EVPN on the router, then activate BGP EVPN for all LEAF_GROUP neighbor, and set the router as ROUTE REFLECTOR for LEAF_GROUP. (so it will receive BGP route from client of LEAF_GROUP, and shared it to other client.
+Activate EVPN on the router, then activate BGP EVPN for all LEAF_GROUP neighbor, and set the router as ROUTE REFLECTOR for LEAF_GROUP. (so it will receive BGP route from client of LEAF_GROUP, and shared it to other client).
 
 ```
 router ospf
  network 0.0.0.0/0 area 0 
 ```
-Activate OSPF on the router, and associate all interface of the router to area ospf 0. It allow exchange of route between ospf routers.
+Activate OSPF on the router, and associate all interface of the router (in our configuration, interfaces qre set in entrypoint, it is address 10.1.1.x for ethx and 1.1.1.1 for lo) to area ospf 0. It allow exchange of route between ospf routers. So OSPF will be declared on 10.1.1.1, 10.1.1.5, 10.1.1.9 automatically, and the RR can now exchange OSPF routes with neighbors connected via these interface. 
