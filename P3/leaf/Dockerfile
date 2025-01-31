@@ -4,12 +4,13 @@ FROM frrouting/frr:latest
 
 RUN	apk update && apk add --no-cache \
 	iproute2 \
-	tcpdump
+	tcpdump \
+	gettext
 
 RUN mv /etc/frr/daemons /etc/frr/daemons-backup
 COPY ./config/vtysh.conf /etc/frr/vtysh.conf
 COPY ./config/daemons /etc/frr/daemons
-COPY ./config/frr.conf /etc/frr/frr.conf
+COPY ./config/frr.conf.template /etc/frr/frr.conf.template
 
 COPY /scripts/entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["sh", "/entrypoint.sh"]

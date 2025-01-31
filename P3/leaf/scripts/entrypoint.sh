@@ -7,10 +7,26 @@ if [ -z "$(which ip)" ]; then
 	exit 1
 fi
 
-REQUIRED_ENV_VARS="ETH1_PREFIX VXLAN_TRAFFIC_DISTRIBUTION_METHOD VXLAN_NVI VTEP_LOCAL VTEP_REMOTE VXLAN_MULTICAST_GROUP"
+if [ -z "$(which envsubst)" ]; then
+	echo "[!] envsubst should be installed." >&2
+fi
+
+OPTIONAL_ENV_VARS=""
+REQUIRED_NETWORK_VARS="LO_PREFIX ETH1_PREFIX RR_LO_IP LOCAL_BGP_ASN RR_BGP_ASN"
+REQUIRED_VXLAN_ENV_VARS="VXLAN_NVI VTEP_REMOTE VXLAN_MULTICAST_GROUP VXLAN_TRAFFIC_DISTRIBUTION_METHOD"
+echo "[i] Optional environment variables: $OPTIONAL_ENV_VARS"
 echo "[i] Expected environment variables: $REQUIRED_ENV_VARS"
+echo "[i] Expected environment variables: $REQUIRED_VXLAN_ENV_VARS"
 
 for VAR in $REQUIRED_ENV_VARS; do
+	VALUE=$(printenv "$VAR")
+	if [ -z "${VALUE:-}" ]; then
+		echo "[!] Environment variable '$VAR' should be defined." >&2
+		exit 1
+	fi
+done
+
+for VAR in $REQUIRED_VXLAN_ENV_VARS; do
 	VALUE=$(printenv "$VAR")
 	if [ -z "${VALUE:-}" ]; then
 		echo "[!] Environment variable '$VAR' should be defined." >&2
@@ -22,33 +38,27 @@ done
 #                              frr.conf                               #
 # =================================================================== #
 
-# ...
+# Substitute env variables in frr.conf file as it doesn't support that by default.
+# We use the gettext apk package for this.
+envsubst < /etc/frr/frr.conf.template > /etc/frr/frr.conf
 
 # =================================================================== #
 #                               Network                               #
 # =================================================================== #
 
-
-# Then, create a vxlan to allow connection thanks to layer3
-ip link add vxlan0 type vxlan id 10 local 1.1.1.2 dstport 4789
-ip link set dev vxlan0 up
-
-# create a bridge to link eth0 to vxlan
-ip link add br0 type bridge
-ip link set dev eth0 master br0 #connect bridge to eth0
-ip link set vxlan0 master br0  # connect bridge to vxlan
-ip link set dev br0 up
-
-
 # Configuration of interfaces (eth0, eth1, vxlan0...)
-ip link set eth0 up # No IP address set as we only use Layer 2 communication here.
-ip addr add ${ETH1_PREFIX} dev eth1
+# eth0: No IP address set because it is only used for layer 2 com. through br0-vxlan0.
+# lo: is strictly virtual thus independent of physical underlaying changes and is always reachable.
+ip link set eth0 up
+ip addr add $ETH1_PREFIX dev eth1
 ip link set eth1 up
+ip addr add $LO_PREFIX dev lo
+ip link set lo up
 if [ "$VXLAN_TRAFFIC_DISTRIBUTION_METHOD" == "unicast" ]; then
 	echo "[i] Configuring VXLAN with unicast."
 	ip link add vxlan0 type vxlan \
 		id $VXLAN_NVI \
-		dev eth1 \
+		dev lo \
 		remote $VTEP_REMOTE \
 		dstport 4789
 	ip link set vxlan0 up
@@ -56,7 +66,7 @@ elif [ "$VXLAN_TRAFFIC_DISTRIBUTION_METHOD" == "multicast" ]; then
 	echo "[i] Configuring VXLAN with multicast."
 	ip link add vxlan0 type vxlan \
 		id $VXLAN_NVI \
-		dev eth1 \
+		dev lo \
 		group $VXLAN_MULTICAST_GROUP \
 		dstport 4789
 	ip link set vxlan0 up

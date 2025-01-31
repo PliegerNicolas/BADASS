@@ -12,8 +12,20 @@ log syslog
 ! It propagates to it's BGP neighbors.
 ! It informs it's neighbors about availables routes, best options, etc.
 
+router bgp ${LOCAL_BGP_ASN}			! ASN private range: [64512-65534]
+  bgp router-id ${LO_PREFIX}
+  neighbor ${RR_LO_IP} remote-as ${RR_BGP_ASN}
+  neighbor ${RR_LO_IP} update-source lo
+  address-family l2vpn evpn
+    neighbor ${RR_LO_IP} activate
+    advertise-all-vni
+
 ! OSPFd (Open shortest path first daemon) configuration
 ! It helps calculate the best path in one AS and build a map of the network.
+
+router ospf
+  network ${LO_PREFIX} area 0
+  network ${ETH1_PREFIX} area 0
 
 ! ISISd (Intermediate system to intermediate system daemon) configuration
 ! It exchanges routing information between routers within an AS
