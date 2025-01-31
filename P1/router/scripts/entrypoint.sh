@@ -32,7 +32,7 @@ done
 
 [ -n "$ETH0_PREFIX" ] && ip addr add $ETH0_PREFIX dev eth0
 ip link set eth0 up
-[ -n "$ETH0_PREFIX" ] && ip addr add $ETH1_PREFIX dev eth0
+[ -n "$ETH1_PREFIX" ] && ip addr add $ETH1_PREFIX dev eth0
 ip link set eth1 up
 
 # Execute all passed arguments of the script as a command (typically the Dockerfile's CMD entry).
