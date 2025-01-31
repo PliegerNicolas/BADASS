@@ -9,7 +9,7 @@ fi
 
 OPTIONAL_ENV_VARS="ETH0_PREFIX"
 REQUIRED_ENV_VARS=""
-echo "[i] Optional environment variables: $REQUIRED_ENV_VARS"
+echo "[i] Optional environment variables: $OPTIONAL_ENV_VARS"
 echo "[i] Expected environment variables: $REQUIRED_ENV_VARS"
 
 for VAR in $REQUIRED_ENV_VARS; do

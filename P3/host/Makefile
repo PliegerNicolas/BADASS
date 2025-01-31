@@ -2,7 +2,7 @@
 # *                              GENERAL INFO                                * #
 # **************************************************************************** #
 
-NAME			=	p2-host
+NAME			=	p3-host
 PREFIX			=	nplieger-ssar
 
 FOUND_IMAGE		:=	$(shell ! docker image inspect ${PREFIX}/${NAME} > /dev/null 2>&1; echo $$?)

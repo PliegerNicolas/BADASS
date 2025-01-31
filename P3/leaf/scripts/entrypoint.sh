@@ -15,13 +15,13 @@ fi
 # BGP_ASN should be a private value in the following range: [64512-65534]
 
 OPTIONAL_ENV_VARS=""
-REQUIRED_NETWORK_VARS="LO_PREFIX ETH1_PREFIX RR_LO_IP LOCAL_BGP_ASN RR_BGP_ASN"
+REQUIRED_NETWORK_ENV_VARS="ETH1_PREFIX LO_IP RR_LO_IP LOCAL_BGP_ASN RR_BGP_ASN"
 REQUIRED_VXLAN_ENV_VARS="VXLAN_NVI"
 echo "[i] Optional environment variables: $OPTIONAL_ENV_VARS"
-echo "[i] Expected environment variables: $REQUIRED_ENV_VARS"
+echo "[i] Expected environment variables: $REQUIRED_NETWORK_ENV_VARS"
 echo "[i] Expected environment variables: $REQUIRED_VXLAN_ENV_VARS"
 
-for VAR in $REQUIRED_ENV_VARS; do
+for VAR in $REQUIRED_NETWORK_ENV_VARS; do
 	VALUE=$(printenv "$VAR")
 	if [ -z "${VALUE:-}" ]; then
 		echo "[!] Environment variable '$VAR' should be defined." >&2
@@ -49,6 +49,13 @@ envsubst < /etc/frr/frr.conf.template > /etc/frr/frr.conf
 #                               Network                               #
 # =================================================================== #
 
+# Enforce LO starts with 1.1.1.
+# Lo is a loopback address. It's purpose is only to communicate with itself so we enforce mask /32.
+if [ "$LO_IP" != 1.1.1.* ]; then
+	echo "[!] LO_IP should arbitrarily start with 1.1.1."
+	exit 1
+fi
+
 # Configuration of interfaces (eth0, eth1, vxlan0...)
 # eth0: No IP address set because it is only used for layer 2 com. through br0-vxlan0.
 # lo: is strictly virtual thus independent of physical underlaying changes and is always reachable.
@@ -58,7 +65,7 @@ envsubst < /etc/frr/frr.conf.template > /etc/frr/frr.conf
 ip link set eth0 up
 ip addr add $ETH1_PREFIX dev eth1
 ip link set eth1 up
-ip addr add $LO_PREFIX dev lo
+ip addr add ${LO_IP}/32 dev lo
 ip link set lo up
 ip link add vxlan0 type vxlan \
 	id $VXLAN_NVI \
