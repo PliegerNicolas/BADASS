@@ -7,7 +7,7 @@ if [ -z "$(which ip)" ]; then
 	exit 1
 fi
 
-REQUIRED_ENV_VARS="ETH1_PREFIX VXLAN_TRAFFIC_DISTRIBUTION_METHOD VXLAN_NVI VTEP_LOCAL VTEP_REMOTE VXLAN_MULTICAST_GROUP"
+REQUIRED_ENV_VARS="ETH1_PREFIX VXLAN_TRAFFIC_DISTRIBUTION_METHOD VXLAN_NVI VTEP_REMOTE VXLAN_MULTICAST_GROUP"
 echo "[i] Expected environment variables: $REQUIRED_ENV_VARS"
 
 for VAR in $REQUIRED_ENV_VARS; do
@@ -36,7 +36,7 @@ if [ "$VXLAN_TRAFFIC_DISTRIBUTION_METHOD" == "unicast" ]; then
 	echo "[i] Configuring VXLAN with unicast."
 	ip link add vxlan0 type vxlan \
 		id $VXLAN_NVI \
-		dev eth1 local $VTEP_LOCAL \
+		dev eth1 \
 		remote $VTEP_REMOTE \
 		dstport 4789
 	ip link set vxlan0 up
