@@ -18,7 +18,7 @@ router bgp ${BGP_ASN}
   bgp log-neighbor-changes
 
   neighbor LEAF_GROUP peer-group
-  neighbor LEAF_GROUP remote-as 1
+  neighbor LEAF_GROUP remote-as ${BGP_ASN}
   ! Assuming all Leaf Lo interfaces we want to listen to are 1.1.1.X/32
   neighbor LEAF_GROUP update-source lo
   bgp listen range 1.1.1.0/24 peer-group LEAF_GROUP
@@ -31,12 +31,11 @@ router bgp ${BGP_ASN}
 ! OSPFd (Open shortest path first daemon) configuration
 ! It helps calculate the best path in one AS and build a map of the network.
 
-router ospf 1
-  router-id ${LO_IP}
+router ospf
   network ${LO_IP}/32 area 0
-  network ${ETH0_IP}/30 area 0
-  network ${ETH1_IP}/30 area 0
-  network ${ETH2_IP}/30 area 0
+  network ${ETH0_IP}/32 area 0
+  network ${ETH1_IP}/32 area 0
+  network ${ETH2_IP}/32 area 0
 
 ! ISISd (Intermediate system to intermediate system daemon) configuration
 ! It exchanges routing information between routers within an AS

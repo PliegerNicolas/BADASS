@@ -54,7 +54,7 @@ envsubst < /etc/frr/frr.conf.template > /etc/frr/frr.conf
 
 # Enforce LO to start with 1.1.1.
 # It's a less flexible strategy but easier to setup in frr.conf.template
-if [ "$LO_IP" = 1.1.1.* ]; then
+if [[ $LO_IP == 1.1.1.* ]]; then
 	ip addr add ${LO_IP}/32 dev lo
 	ip link set lo up
 else
