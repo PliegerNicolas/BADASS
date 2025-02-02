@@ -32,10 +32,7 @@ router bgp ${BGP_ASN}
 ! It helps calculate the best path in one AS and build a map of the network.
 
 router ospf
-  network ${LO_IP}/32 area 0
-  network ${ETH0_IP}/32 area 0
-  network ${ETH1_IP}/32 area 0
-  network ${ETH2_IP}/32 area 0
+  network 0.0.0.0/0 area 0
 
 ! ISISd (Intermediate system to intermediate system daemon) configuration
 ! It exchanges routing information between routers within an AS
