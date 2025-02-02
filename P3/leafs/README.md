@@ -9,10 +9,10 @@ ip link set eth0 up
 setting eth0 to link to host.
 
 ```
-ip link add vxlan0 type vxlan id 10 local 1.1.1.x dstport 4789
+ip link add vxlan0 type vxlan id 10 [local 1.1.1.x] dstport 4789
 ip link set dev vxlan0 up
 ```
-setting vxlan. the address 1.1.1.x is their respective loopback address. We use it as source VTEP (tunnel endpoint of vxlan).
+setting vxlan. we can set the address 1.1.1.x (that are their respective loopback address) as source VTEP (tunnel endpoint of vxlan) for more stability. If we don't set up local source, Linux will automatically choose source depending on destination (but we have only one interface set, so it will automatically take this interface 10.1.1.x)
 
 ```
 ip link add br0 type bridge
@@ -30,7 +30,7 @@ interface eth1
  ip ospf area 0
 ```
 Setting eth1 (link to router reflector), with a mask /30, because it is a small subnet of only 4 addresses range.
-Then, we set up ospf for this interface on the area 0 (main area). That will serve to shared route with RR, and allow to propagate its own prefixe to others.
+Then, we set up ospf for this interface on the area 0 (main area). That will serve to shared OSPF route with RR, and allow to propagate its own prefixe to others.
 
 ```
 interface lo

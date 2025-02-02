@@ -1,5 +1,21 @@
 # P3
 
+## Steps
+First of all, in our topology, all routers will configure their ethX interfaces.
+Then OSPF will establish a connectivity between theses routers thanks to ethX. So the route reflector will see the 3 leaves thanks to OSPF, via 192.16.1.x addresses. And each leaves will establish a link with RR thanks to their eth1.
+Thanks to OSPF and this primary link established, the RR can learn route to loopback address of each leaves, and each leaves can learn the route to the loopback of RR. This is essential because BGP will use the loopback addresses 1.1.1.x.
+BGP can now start its work : RR will establish BGP sessions et listen on 1.1.1.1 all request from 1.1.1.x. Each leaves will also establish connexion with 1.1.1.1 of RR. We can now exchange between leaf loopback and RR loopback. So BGP can now exchange evpn route (which have 3 informations: VNI (vxlan identifier), MAC addresses, IP addresses).
+So when we activate EVPN, leaves will send their available VNI to RR thanks to BGP-EVPN. RR will transmit this information to others leaves. (if VXLAN was not set yet, nothing is transmit at this point. But as soon as vxlan0 will be set up on vxlan id 10, FRR will detect that VNI 10 is actve and the routers leafs will anniounce it immediatly to RR thanks to bgp-evpn).
+exemple: leaf1 say "I have a VNI 10", and RR send it to 2 others leafs "leaf1 has a VNI 10" and vice versa.
+Once leaves kno who is on VNI 10 thanks to BGP-EVPN, it will automatically create VXLAN tunnels to the others leaves, so now each leaves can exchange layer 2 trafic with others.
+
+Resume :
+    • Interfaces (ethX, lo).
+    • OSPF start and learn routes between leafs and RR via 192.16.1.x.
+    • BGP → Establishment of session with RR via loopbacks (1.1.1.x)
+    • EVPN → Announce VNI.
+    • VXLAN → Creation and attachment of tunnels. VXLAN tunnels will be established and will allow trafic.
+
 ## Route Reflector
 The route reflector is use in BGP network to simplify the management of BGP session. In basic BGP, all routers have to establish a peer-to-peer relation with all others routers (full mesh model), but it is not appropriate for a large network.
 So, the route reflector allow to centralize routage informations, so the leafs only need to send to RR and not to all routers. Each routers connected to the RR is a client of it. Each client send routage informations to RR and RR propagate theses information to all client into same groups.
@@ -37,6 +53,3 @@ Open Shortest Path First allow to find the shortest path to a destination. It wo
 It works on intern network.
 OSPF send "hello packet" to detect neighbor, then routeur discovered share information on their own link. With new information, ospf calcul shortest path.
 In VXLAN context, ospf allow to share route between VTEP (vxlan tunnel endpoint that encapsulate and deencapsulate ethernet frame) and give a ubderlay network stable to vxlan. In EVPN context, it allow connexion between many data centers.
-
-## Topology.
-For our topology, it begin with VXLAN. Our leaf are set a vxlan of same ID, with start endpoint set to their loopback address.
