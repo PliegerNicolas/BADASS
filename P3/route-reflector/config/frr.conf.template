@@ -1,36 +1,38 @@
 ! FRR global settings
 
 frr defaults traditional
-no ipv6 forwarding
 log syslog
 
 ! Zebra configuration
 ! Core daemon for FRR: routing tables, network interfaces.
 ! It also supervises different network routing protocols.
 
-interface eth1
- ip address 10.1.1.2/30
- ip ospf area 0
-
-interface lo
- ip address 1.1.1.2/32
- ip ospf area 0
-
 ! BGPd (border gateway protocol daemon) configuration
 ! Propagates routing and reachability information between Autonomous Systems.
 ! It propagates to it's BGP neighbors.
 ! It informs it's neighbors about availables routes, best options, etc.
 
-router bgp 1
- neighbor 1.1.1.1 remote-as 1
- neighbor 1.1.1.1 update-source lo
- address-family l2vpn evpn
-  neighbor 1.1.1.1 activate
-  advertise-all-vni
+router bgp ${BGP_ASN}
+  ! Usage of the loopback ip as unique IP for the BGP router.
+  bgp router-id ${LO_IP} ! Usage of the loopback ip as unique IP for the BGP router.
+  bgp log-neighbor-changes
+
+  neighbor LEAF_GROUP peer-group
+  neighbor LEAF_GROUP remote-as ${BGP_ASN}
+  ! Assuming all Leaf Lo interfaces we want to listen to are 1.1.1.X/32
+  neighbor LEAF_GROUP update-source lo
+  bgp listen range 1.1.1.0/24 peer-group LEAF_GROUP
+
+  address-family l2vpn evpn
+    neighbor LEAF_GROUP activate
+    neighbor LEAF_GROUP route-reflector-client
+  exit-address-family
 
 ! OSPFd (Open shortest path first daemon) configuration
 ! It helps calculate the best path in one AS and build a map of the network.
+
 router ospf
+  network 0.0.0.0/0 area 0
 
 ! ISISd (Intermediate system to intermediate system daemon) configuration
 ! It exchanges routing information between routers within an AS

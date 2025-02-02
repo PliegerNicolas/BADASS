@@ -7,10 +7,22 @@ if [ -z "$(which ip)" ]; then
 	exit 1
 fi
 
-REQUIRED_ENV_VARS="ETH1_PREFIX VXLAN_TRAFFIC_DISTRIBUTION_METHOD VXLAN_NVI VTEP_REMOTE VXLAN_MULTICAST_GROUP"
+OPTIONAL_ENV_VARS=""
+REQUIRED_NETWORK_VARS="ETH1_PREFIX"
+REQUIRED_VXLAN_ENV_VARS="VXLAN_NVI VTEP_REMOTE VXLAN_MULTICAST_GROUP VXLAN_TRAFFIC_DISTRIBUTION_METHOD"
+echo "[i] Optional environment variables: $OPTIONAL_ENV_VARS"
 echo "[i] Expected environment variables: $REQUIRED_ENV_VARS"
+echo "[i] Expected environment variables: $REQUIRED_VXLAN_ENV_VARS"
 
 for VAR in $REQUIRED_ENV_VARS; do
+	VALUE=$(printenv "$VAR")
+	if [ -z "${VALUE:-}" ]; then
+		echo "[!] Environment variable '$VAR' should be defined." >&2
+		exit 1
+	fi
+done
+
+for VAR in $REQUIRED_VXLAN_ENV_VARS; do
 	VALUE=$(printenv "$VAR")
 	if [ -z "${VALUE:-}" ]; then
 		echo "[!] Environment variable '$VAR' should be defined." >&2
@@ -29,8 +41,8 @@ done
 # =================================================================== #
 
 # Configuration of interfaces (eth0, eth1, vxlan0...)
-ip link set eth0 up # No IP address set as we only use Layer 2 communication here.
-ip addr add ${ETH1_PREFIX} dev eth1
+ip link set eth0 up # No IP address needed as we only use Layer 2 communication here.
+ip addr add $ETH1_PREFIX dev eth1
 ip link set eth1 up
 if [ "$VXLAN_TRAFFIC_DISTRIBUTION_METHOD" == "unicast" ]; then
 	echo "[i] Configuring VXLAN with unicast."
@@ -52,7 +64,7 @@ else
 	echo "[!] VXLAN_TRAFFIC_DISTRIBUTION_METHOD should be one of: [\"unicast\", \"multicast\"]." >&2
 fi
 
-# Configuration of the bridge between router1.eth0 and router1.vxlan0 to enable communication with the virtual VXLAN interface.
+# Configuration of the bridge between routerX.eth0 and routerX.vxlan0 to enable communication with the virtual VXLAN interface.
 ip link add br0 type bridge
 ip link set dev eth0 master br0
 ip link set vxlan0 master br0
