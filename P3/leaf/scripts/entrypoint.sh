@@ -11,11 +11,8 @@ if [ -z "$(which envsubst)" ]; then
 	echo "[!] envsubst should be installed." >&2
 fi
 
-# LO_PREFIX should be unique for each leaf and route-reflector.
-# BGP_ASN should be a private value in the following range: [64512-65534]
-
 OPTIONAL_ENV_VARS=""
-REQUIRED_NETWORK_ENV_VARS="ETH1_PREFIX LO_IP RR_LO_IP LOCAL_BGP_ASN RR_BGP_ASN"
+REQUIRED_NETWORK_ENV_VARS="LO_IP RR_LO_IP ETH1_IP BGP_ASN"
 REQUIRED_VXLAN_ENV_VARS="VXLAN_NVI"
 echo "[i] Optional environment variables: $OPTIONAL_ENV_VARS"
 echo "[i] Expected environment variables: $REQUIRED_NETWORK_ENV_VARS"
@@ -49,31 +46,39 @@ envsubst < /etc/frr/frr.conf.template > /etc/frr/frr.conf
 #                               Network                               #
 # =================================================================== #
 
-# Enforce LO starts with 1.1.1.
-# Lo is a loopback address. It's purpose is only to communicate with itself so we enforce mask /32.
-if [ "$LO_IP" != 1.1.1.* ]; then
+# Configuration of interfaces (eth0, eth1, vxlan0...)
+
+# Mask CIDR examples /32
+# Network address 192.168.1.0/32 | Usabe IP addresses: 192.168.1.0 | Broadcast address: X
+# Usable IP and Network address are merged with CIDR /32.
+
+# Enforce LO to start with 1.1.1.
+# It's a less flexible strategy but easier to setup in frr.conf.template
+if [ "$LO_IP" = 1.1.1.* ]; then
+	ip addr add ${LO_IP}/32 dev lo
+	ip link set lo up
+else
 	echo "[!] LO_IP should arbitrarily start with 1.1.1."
 	exit 1
-fi
+fi 
 
-# Configuration of interfaces (eth0, eth1, vxlan0...)
-# eth0: No IP address set because it is only used for layer 2 com. through br0-vxlan0.
-# lo: is strictly virtual thus independent of physical underlaying changes and is always reachable.
-# It should be unique in the BGP network.
-# vxlan0: no remote is set. We configure routing and targets via BGP.
+# Mask CIDR examples /30 
+# Network address: 192.168.1.0/30 | Usable IP addresses: 192.168.1.1 => 192.168.1.2
+# Network address: 192.168.1.4/30 | Usable IP addresses: 192.168.1.5 => 192.168.1.6
+# Network address: 192.168.1.8/30 | Usable IP addresses: 192.168.1.9 => 192.168.1.10
 
-ip link set eth0 up
-ip addr add $ETH1_PREFIX dev eth1
+ip link set eth0 up # No IP set: is bridged with vxlan0 and communicates via layer2.
+ip addr add ${ETH1_IP}/30 dev eth1
 ip link set eth1 up
-ip addr add ${LO_IP}/32 dev lo
-ip link set lo up
+
+# VTEP target is defined through BGP.
 ip link add vxlan0 type vxlan \
-	id $VXLAN_NVI \
+	id ${VXLAN_NVI} \
 	dev lo \
 	dstport 4789
 ip link set vxlan0 up
 
-# Configuration of the bridge between router1.eth0 and router1.vxlan0 to enable communication with the virtual VXLAN interface.
+# Configuration of the bridge between leaf.eth0 and leaf.vxlan0 to enable communication with the virtual VXLAN interface.
 ip link add br0 type bridge
 ip link set dev eth0 master br0
 ip link set vxlan0 master br0

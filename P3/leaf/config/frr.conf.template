@@ -12,9 +12,9 @@ log syslog
 ! It propagates to it's BGP neighbors.
 ! It informs it's neighbors about availables routes, best options, etc.
 
-router bgp ${LOCAL_BGP_ASN}			! ASN private range: [64512-65534]
+router bgp ${LOCAL_BGP_ASN}
   bgp router-id ${LO_IP}
-  neighbor ${RR_LO_IP} remote-as ${RR_BGP_ASN}
+  neighbor ${RR_LO_IP} remote-as 1
   neighbor ${RR_LO_IP} update-source lo
   address-family l2vpn evpn
     neighbor ${RR_LO_IP} activate

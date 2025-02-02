@@ -64,7 +64,7 @@ else
 	echo "[!] VXLAN_TRAFFIC_DISTRIBUTION_METHOD should be one of: [\"unicast\", \"multicast\"]." >&2
 fi
 
-# Configuration of the bridge between router1.eth0 and router1.vxlan0 to enable communication with the virtual VXLAN interface.
+# Configuration of the bridge between routerX.eth0 and routerX.vxlan0 to enable communication with the virtual VXLAN interface.
 ip link add br0 type bridge
 ip link set dev eth0 master br0
 ip link set vxlan0 master br0
