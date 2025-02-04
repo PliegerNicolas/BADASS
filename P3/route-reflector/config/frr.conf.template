@@ -17,22 +17,22 @@ router bgp ${BGP_ASN}
   bgp router-id ${LO_IP} ! Usage of the loopback ip as unique IP for the BGP router.
   bgp log-neighbor-changes
 
-  neighbor LEAF_GROUP peer-group
-  neighbor LEAF_GROUP remote-as ${BGP_ASN}
+  neighbor LEAF_GROUP peer-group  ! create a group of BGP neighbor named LEAF_GROUP, so we can give same parameters for all of the group.
+  neighbor LEAF_GROUP remote-as ${BGP_ASN} ! Specify that all group members are in same AS, number $BGP_ASN
   ! Assuming all Leaf Lo interfaces we want to listen to are 1.1.1.X/32
-  neighbor LEAF_GROUP update-source lo
-  bgp listen range 1.1.1.0/24 peer-group LEAF_GROUP
+  neighbor LEAF_GROUP update-source lo   ! The loopback address wil be used as source to establish BGP session with LEAF_GROUP members.
+  bgp listen range 1.1.1.0/24 peer-group LEAF_GROUP  ! accept dynamicaly router as neighbor if they are in LEAF_GROUP and are in range 1.1.1.0/24
 
   address-family l2vpn evpn
-    neighbor LEAF_GROUP activate
-    neighbor LEAF_GROUP route-reflector-client
+    neighbor LEAF_GROUP activate  ! activate exchange of EVPN route for all neighbor which are in LEAF_GROUP
+    neighbor LEAF_GROUP route-reflector-client  ! specify that all neighbor whixh are in LEAF_GROUP are client of this router, which transform it by the way in router reflector.
   exit-address-family
 
 ! OSPFd (Open shortest path first daemon) configuration
 ! It helps calculate the best path in one AS and build a map of the network.
 
 router ospf
-  network 0.0.0.0/0 area 0
+  network 0.0.0.0/0 area 0  ! Activate OSPF on all interface of the router and associate it to area 0. It allow to exchange route dynamicaly with other OSPF routers of the network. It is essential to propagate basic connectivity like the loopbacks. Indeed, BGP use loopback with "update-source lo" commande, and OSPF allow to ensure their discovery and accessibility. 
 
 ! ISISd (Intermediate system to intermediate system daemon) configuration
 ! It exchanges routing information between routers within an AS
