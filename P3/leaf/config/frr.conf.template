@@ -12,19 +12,19 @@ log syslog
 ! It propagates to it's BGP neighbors.
 ! It informs it's neighbors about availables routes, best options, etc.
 
-router bgp ${BGP_ASN}
-  bgp router-id ${LO_IP}
-  neighbor ${RR_LO_IP} remote-as ${BGP_ASN}
-  neighbor ${RR_LO_IP} update-source lo
-  address-family l2vpn evpn
-    neighbor ${RR_LO_IP} activate
-    advertise-all-vni
+router bgp ${BGP_ASN}  ! active BGP on the leaf and associate it to AS number BGP_ASN
+  bgp router-id ${LO_IP}  ! define ID router
+  neighbor ${RR_LO_IP} remote-as ${BGP_ASN}  ! define a neighbor of addresse $RR_LO_IP and which is in same AS
+  neighbor ${RR_LO_IP} update-source lo   ! specify that peering with this neighbor have to use loopback interface, which is more stable
+  address-family l2vpn evpn  ! activate BGP also for EVPN routes
+    neighbor ${RR_LO_IP} activate  ! activate peering bgp for EVPN route for the Session neighbor $RR_LO_IP (before that, the session with this neighbor does not allow EVPN routes)
+    advertise-all-vni  ! activate automatic publishing of all VNI of this leag
 
 ! OSPFd (Open shortest path first daemon) configuration
 ! It helps calculate the best path in one AS and build a map of the network.
 
 router ospf
-  network 0.0.0.0/0 area 0
+  network 0.0.0.0/0 area 0  ! actiavte OSPF for all interface of the leaf
 
 ! ISISd (Intermediate system to intermediate system daemon) configuration
 ! It exchanges routing information between routers within an AS
