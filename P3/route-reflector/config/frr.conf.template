@@ -12,14 +12,14 @@ log syslog
 ! It propagates to it's BGP neighbors.
 ! It informs it's neighbors about availables routes, best options, etc.
 
-! Usage of the loopback ip as unique IP for the BGP router.
-! create a group of BGP neighbor named LEAF_GROUP, so we can give same parameters for all of the group.
-! Specify that all group members are in same AS, number $BGP_ASN
-! Assuming all Leaf Lo interfaces we want to listen to are 1.1.1.X/32
-! The loopback address wil be used as source to establish BGP session with LEAF_GROUP members.
-! accept dynamicaly router as neighbor if they are in LEAF_GROUP and are in range 1.1.1.0/24
-! activate exchange of EVPN route for all neighbor which are in LEAF_GROUP
-! specify that all neighbor whixh are in LEAF_GROUP are client of this router, which transform it by the way in router reflector.
+! bgp router-id ${LO_IP}                             : Usage of the loopback ip as unique IP for the BGP router.
+! neighbor LEAF_GROUP peer-group                     : create a group of BGP neighbor named LEAF_GROUP, so we can give same parameters for all of the group.
+! neighbor LEAF_GROUP remote-as ${BGP_ASN}           : Specify that all group members are in same AS, number $BGP_ASN
+! neighbor LEAF_GROUP update-source lo               : Assuming all Leaf Lo interfaces we want to listen to are 1.1.1.X/32. So the loopback address wil be used as source to establish BGP session with LEAF_GROUP members.
+! bgp listen range 1.1.1.0/24 peer-group LEAF_GROUP  : accept dynamicaly router as neighbor if they are in LEAF_GROUP and are in range 1.1.1.0/24
+! address-family l2vpn evpn
+    ! neighbor LEAF_GROUP activate                   : activate exchange of EVPN route for all neighbor which are in LEAF_GROUP
+! neighbor LEAF_GROUP route-reflector-client         : specify that all neighbor whixh are in LEAF_GROUP are client of this router, which transform it by the way in router reflector.
 
 router bgp ${BGP_ASN}
   bgp router-id ${LO_IP}
