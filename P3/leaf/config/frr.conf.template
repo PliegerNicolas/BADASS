@@ -12,13 +12,13 @@ log syslog
 ! It propagates to it's BGP neighbors.
 ! It informs it's neighbors about availables routes, best options, etc.
 
-! active BGP on the leaf and associate it to AS number BGP_ASN
-! define ID router
-! define a neighbor of addresse $RR_LO_IP and which is in same AS
-! specify that peering with this neighbor have to use loopback interface, which is more stable
-! activate BGP also for EVPN routes
-! activate peering bgp for EVPN route for the Session neighbor $RR_LO_IP (before that, the session with this neighbor does not allow EVPN routes)
-! activate automatic publishing of all VNI of this leag
+! router bgp ${BGP_ASN}                       : active BGP on the leaf and associate it to AS number BGP_ASN
+! bgp router-id ${LO_IP}                      : define ID router
+! neighbor ${RR_LO_IP} remote-as ${BGP_ASN}   : define a neighbor of addresse $RR_LO_IP and which is in same AS
+! neighbor ${RR_LO_IP} update-source lo       : specify that peering with this neighbor have to use loopback interface, which is more stable
+! address-family l2vpn evpn                   : activate BGP also for EVPN routes
+! neighbor ${RR_LO_IP} activate               : activate peering bgp for EVPN route for the Session neighbor $RR_LO_IP (before that, the session with this neighbor does not allow EVPN routes)
+! advertise-all-vni                           : activate automatic publishing of all VNI of this leag
 
 
 router bgp ${BGP_ASN}
